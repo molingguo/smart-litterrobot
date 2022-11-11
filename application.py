@@ -98,7 +98,7 @@ async def setup_robot(run_cycle_if_necessary = True):
         # print("Robots:")
         for robot in account.robots:
             # print(robot)
-            history = await robot.get_activity_history()
+            history = await robot.get_activity_history(limit = 500)
             status = robot.status
             if run_cycle_if_necessary and cycle_needed(status, history):
                 await robot.start_cleaning()
