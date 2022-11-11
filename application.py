@@ -83,7 +83,7 @@ async def setup_robot(run_cycle_if_necessary = True):
     if last_updated:
         # print("last_updated: " + str(last_updated))
         diff = minutes_diff(datetime.now(timezone.utc), last_updated)
-        if diff < 2:
+        if diff < 4:
             return
     # Create an account.
     account = Account()
@@ -126,7 +126,7 @@ def cycle_needed(status, history):
             print("#### no cat interruppet between cycle, no need to run again - " + str(datetime.now()))
             return False
         minutes = minutes_diff(datetime.now(timezone.utc), last_activity.timestamp)
-        if minutes >= 15:
+        if minutes >= 12:
             print("!!!! Run Cycle Needed, start a cycle !!!! - " + str(datetime.now()))
             return True
         else:
