@@ -13,6 +13,10 @@ class RobotInfo:
     history = None
     insight = None
     last_updated = None
+    is_online = None
+    litter_level = None
+    waste_drawer_level = None
+    is_drawer_full_indicator_triggered = None
 
 # set configuration values
 # class Config:
@@ -53,7 +57,12 @@ def index():
     return {
         "last_updated": str(robot_info.last_updated),
         "status": str(robot_info.status),
+        "status_text": robot_info.status.text,
         "insight": robot_info.insight,
+        "is_online": robot_info.is_online,
+        "litter_level": robot_info.litter_level,
+        "waste_drawer_level": robot_info.waste_drawer_level,
+        "is_drawer_full_indicator_triggered": robot_info.is_drawer_full_indicator_triggered,
         "history": [{
             "timestamp": str(activity.timestamp),
             "action": None if type(activity.action) is str else str(activity.action),
@@ -108,6 +117,11 @@ async def setup_robot(run_cycle_if_necessary = True):
             application.robot_info.status = status
             application.robot_info.history = history
             application.robot_info.last_updated = datetime.now(timezone.utc)
+            application.robot_info.is_online = robot.is_online
+            application.robot_info.litter_level = robot.litter_level
+            application.robot_info.waste_drawer_level = robot.waste_drawer_level
+            application.robot_info.is_drawer_full_indicator_triggered = robot.is_drawer_full_indicator_triggered
+
     finally:
         # Disconnect from the API.
         await account.disconnect()
