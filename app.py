@@ -23,13 +23,13 @@ class RobotInfo:
 #     SCHEDULER_API_ENABLED = True
 
 # EB looks for an 'application' callable by default.
-application = Flask(__name__)
+app = Flask(__name__)
 load_dotenv()
 
 origins = environ['CORS_ORIGINS'].split(',')
-cors = CORS(application, origins=origins)
+cors = CORS(app, origins=origins)
 # application.config.from_object(Config())
-application.robot_info = RobotInfo()
+app.robot_info = RobotInfo()
 
 # initialize scheduler
 # scheduler = APScheduler()
@@ -50,10 +50,10 @@ application.robot_info = RobotInfo()
     # with scheduler.app.app_context():
     #     print(scheduler.app.config)
 
-@application.route("/")
+@app.route("/")
 def index():
     asyncio.run(setup_robot())
-    robot_info = application.robot_info
+    robot_info = app.robot_info
     return {
         "last_updated": str(robot_info.last_updated),
         "status": str(robot_info.status),
@@ -88,7 +88,7 @@ def minutes_diff(time1, time2):
     return divmod(duration_in_s, 60)[0]
 
 async def setup_robot(run_cycle_if_necessary = True):
-    last_updated = application.robot_info.last_updated
+    last_updated = app.robot_info.last_updated
     if last_updated:
         # print("last_updated: " + str(last_updated))
         diff = minutes_diff(datetime.now(timezone.utc), last_updated)
@@ -114,13 +114,13 @@ async def setup_robot(run_cycle_if_necessary = True):
             # insight = await robot.get_insight()
             # print(insight)
             # insight = None
-            application.robot_info.status = status
-            application.robot_info.history = history
-            application.robot_info.last_updated = datetime.now(timezone.utc)
-            application.robot_info.is_online = robot.is_online
-            application.robot_info.litter_level = robot.litter_level
-            application.robot_info.waste_drawer_level = robot.waste_drawer_level
-            application.robot_info.is_drawer_full_indicator_triggered = robot.is_drawer_full_indicator_triggered
+            app.robot_info.status = status
+            app.robot_info.history = history
+            app.robot_info.last_updated = datetime.now(timezone.utc)
+            app.robot_info.is_online = robot.is_online
+            app.robot_info.litter_level = robot.litter_level
+            app.robot_info.waste_drawer_level = robot.waste_drawer_level
+            app.robot_info.is_drawer_full_indicator_triggered = robot.is_drawer_full_indicator_triggered
 
     finally:
         # Disconnect from the API.
@@ -154,4 +154,4 @@ if __name__ == "__main__":
     # Setting debug to True enables debug output. This line should be
     # removed before deploying a production app.
     # application.debug = True
-    application.run()
+    app.run()
