@@ -6,7 +6,7 @@ from flask import Flask
 from flask_cors import CORS
 from os import environ
 from dotenv import load_dotenv
-# from flask_apscheduler import APScheduler
+from flask_apscheduler import APScheduler
 
 class RobotInfo:
     status = None
@@ -19,8 +19,8 @@ class RobotInfo:
     is_drawer_full_indicator_triggered = None
 
 # set configuration values
-# class Config:
-#     SCHEDULER_API_ENABLED = True
+class Config:
+    SCHEDULER_API_ENABLED = True
 
 # EB looks for an 'application' callable by default.
 app = Flask(__name__)
@@ -28,27 +28,28 @@ load_dotenv()
 
 origins = environ['CORS_ORIGINS'].split(',')
 cors = CORS(app, origins=origins)
-# application.config.from_object(Config())
+app.config.from_object(Config())
 app.robot_info = RobotInfo()
 
 # initialize scheduler
-# scheduler = APScheduler()
-# scheduler.init_app(application)
-# scheduler.start()
+scheduler = APScheduler()
+scheduler.init_app(app)
 
-# @scheduler.task(
-#     "interval",
-#     id="job_sync",
-#     minutes=10,
-#     max_instances=1,
-# )
-# def task1():
-#     print("checking robot cycle")
-#     asyncio.run(setup_robot(run_cycle_if_necessary = True))
+@scheduler.task(
+    "interval",
+    id="job_sync",
+    minutes=5,
+    max_instances=1,
+)
+def task1():
+    print("#### checking robot cycle")
+    asyncio.run(setup_robot())
 
     # oh, do you need something from config?
     # with scheduler.app.app_context():
     #     print(scheduler.app.config)
+
+scheduler.start()
 
 @app.route("/")
 def index():
